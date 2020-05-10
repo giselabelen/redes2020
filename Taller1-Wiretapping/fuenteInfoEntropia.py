@@ -3,9 +3,12 @@
 from math import *
 from scapy.all import *
 
+frames = 0
 S1 = {}
 
 def mostrar_fuente(S):
+	global frames
+	frames += 1
 	N = sum(S.values())
 	simbolos = sorted(S.iteritems(), key=lambda x: -x[1])
 	entropia = 0
@@ -15,6 +18,7 @@ def mostrar_fuente(S):
 		entropia += prob*info # acumulo para la entropia
 		print "\n %s : %.5f --- %s %.5f" % (d,prob,"Info: ",info)
 	print "\n %s : %.5f" % ("Entropia: ",entropia)
+	print "\n%d frames" % (frames)
 	print "\n -----------"
 
 def callback(pkt):
