@@ -23,7 +23,7 @@ def mostrar_fuente(S):
 
 def callback(pkt):
 	if pkt.haslayer(Ether):
-		proto = pkt[Ether].type # El campo type del frame tiene el protocolo
+		proto = "0%x" % pkt[Ether].type # El campo type del frame tiene el protocolo
 		src = pkt[Ether].src # Origen
 		dst = pkt[Ether].dst # Destino
 		s_i = (src, dst, proto) # Aca se define el simbolo de la fuente
