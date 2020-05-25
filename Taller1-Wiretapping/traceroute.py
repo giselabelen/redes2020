@@ -7,6 +7,8 @@ def main():
 	responses = {}
 	runs = 30
 
+	target = socket.gethostbyname(sys.argv[1])
+
 	for i in range(runs):
 		print "\nCorrida %d" % i
 		for ttl in range(1,40):
@@ -18,6 +20,8 @@ def main():
 			if ans is not None:
 				if ttl not in responses: responses[ttl] = []
 				responses[ttl].append((ans.src, rtt))
+				if ans.src == target:
+					break
 			if ttl in responses:
 				print ".",  # print ttl, responses[ttl]
 			else:
