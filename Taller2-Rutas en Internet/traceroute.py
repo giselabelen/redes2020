@@ -32,8 +32,8 @@ def main():
 
 	for ttl in responses:
 		print ttl, responses[ttl];
-		ip = mode(responses[ttl])
-		avg = average_by_ip(responses[ttl], ip)
+		ip = other_mode(responses[ttl])
+		avg = other_average_by_ip(responses[ttl], ip)
 		averages[ttl] = [ip, avg]
 
 	for ttl in averages:
@@ -71,6 +71,7 @@ def mode(tests):
 
 	return maxkey
 
+
 def average_by_ip(tests, ip):
 	total = 0
 	quantity = 0
@@ -80,6 +81,18 @@ def average_by_ip(tests, ip):
 			total = total + test[1]
 
 	return total/quantity
+
+
+def other_mode(tests):
+	ip_list = [test[0] for test in tests]
+	return max(set(ip_list), key=ip_list.count)
+
+
+def other_average_by_ip(tests,ip):
+	filtered_by_ip = [test for test in tests if test[0] == ip]
+	values_list = [test[1] for test in filtered_by_ip]
+	return sum(values_list)/len(values_list)
+
 
 if __name__ == "__main__":
     main()
