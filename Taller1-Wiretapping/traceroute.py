@@ -5,7 +5,7 @@ from time import *
 
 def main():
 	responses = {}
-	runs = 5
+	runs = 30
 
 	for i in range(runs):
 		print "\nCorrida %d" % i
