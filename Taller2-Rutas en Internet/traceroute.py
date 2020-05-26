@@ -3,6 +3,7 @@ import sys
 from scapy.all import *
 from time import *
 
+
 def main():
 	responses = {}
 	runs = 30
@@ -54,6 +55,9 @@ def main():
 
 		first = False
 
+	file = open("responses.txt","w")
+	file.write(str(responses))
+	file.close()
 
 def mode(tests):
 	ips = {}
