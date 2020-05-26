@@ -48,8 +48,7 @@ def main():
 		current_ip = averages[ttl][0]
 		current_average = averages[ttl][1]
 		if not first:
-			if current_average < previous_average: continue
-			diff = current_average - previous_average
+			diff = max(0, current_average - previous_average)
 			print "%s a %s: %f" % (previous_ttl, current_ip, diff)
 		previous_average = current_average
 		previous_ttl = current_ip
