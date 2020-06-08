@@ -8,21 +8,21 @@ ports = range(1025)
 ip = socket.gethostbyname(sys.argv[1])
 #print ip
 
-# print "Pruebas TCP"
-# for i in ports:
-# 	p = IP(dst=ip)/TCP(dport=i, flags='S')
-# 	print i,
+print "Pruebas TCP"
+for i in ports:
+	p = IP(dst=ip)/TCP(dport=i, flags='S')
+	print i,
 
-# 	resp = sr1(p, verbose=False, timeout=0.2)
-# 	if resp is None:
-# 		print "filtrado"
-# 	elif resp.haslayer(TCP):
-# 		tcp_layer = resp.getlayer(TCP)
-# 		if tcp_layer.flags == 0x12:
-# 			print "abierto", tcp_layer.flags
-# 			sr1(IP(dst=ip)/TCP(dport=ports, flags='AR'), verbose=False, timeout=1)
-# 		elif tcp_layer.flags == 0x14:
-# 			print "cerrado", tcp_layer.flags
+	resp = sr1(p, verbose=False, timeout=0.2)
+	if resp is None:
+		print "filtrado"
+	elif resp.haslayer(TCP):
+		tcp_layer = resp.getlayer(TCP)
+		if tcp_layer.flags == 0x12:
+			print "abierto", tcp_layer.flags
+			sr1(IP(dst=ip)/TCP(dport=ports, flags='AR'), verbose=False, timeout=1)
+		elif tcp_layer.flags == 0x14:
+			print "cerrado", tcp_layer.flags
 
 
 
