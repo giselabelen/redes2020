@@ -3,7 +3,7 @@
 import sys
 from scapy.all import*
 
-ports = range(100)
+ports = range(1025)
 #ip = sys.argv[1]
 ip = socket.gethostbyname(sys.argv[1])
 #print ip
@@ -40,5 +40,5 @@ for i in ports:
 		icmp_layer = resp.getlayer(ICMP)
 		if icmp_layer.type == 0x03 and icmp_layer.code == 0x03:
 			print "cerrado", icmp_layer.flags
-		elif icmp_layer.type == 0x03 and icmp_layer.code in [0x01,0x02,0x09,0x10,0x13]: # esto me lo copie, revisar si es correcto
+		elif icmp_layer.type == 0x03 and icmp_layer.code in [0x09,0x10,0x13]:
 			print "filtrado"
