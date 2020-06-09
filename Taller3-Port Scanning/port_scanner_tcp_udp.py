@@ -13,7 +13,7 @@ for i in ports:
 	p = IP(dst=ip)/TCP(dport=i, flags='S')
 	print i,
 
-	resp = sr1(p, verbose=False, timeout=0.2)
+	resp = sr1(p, verbose=False, timeout=8)
 	if resp is None:
 		print "filtrado"
 	elif resp.haslayer(TCP):
@@ -23,6 +23,10 @@ for i in ports:
 			sr1(IP(dst=ip)/TCP(dport=ports, flags='AR'), verbose=False, timeout=1)
 		elif tcp_layer.flags == 0x14:
 			print "cerrado", tcp_layer.flags
+		else:
+			print "TCP ",tcp_layer.flags # esto es por si vienen otros flags (no creo)
+	else:
+		print resp.summary() # esto es por si pasa algo distinto, muestra todo
 
 
 
@@ -31,7 +35,7 @@ for i in ports:
 	q = IP(dst=ip)/UDP(dport=i)
 	print i,
 
-	resp = sr1(q, verbose=False, timeout=1)
+	resp = sr1(q, verbose=False, timeout=8)
 	if resp is None: 
 	 	print "abierto o filtrado"
 	elif resp.haslayer(UDP):
@@ -44,3 +48,5 @@ for i in ports:
 			print "filtrado"
 		else:
 			print "ICMP ",icmp_layer.code # esto es por si me viene un codigo distinto
+	else:
+		print resp.summary() # esto es por si pasa algo distinto, muestra todo
