@@ -3,48 +3,54 @@ from scapy.all import *
 dns = DNS(rd=1,qd=DNSQR(qname="www.dc.uba.ar"))
 udp = UDP(sport=RandShort(), dport=53)
 ips = [IP(dst="199.9.14.201")] # ahora es una lista de ips
-ns_to_ar = {} # diccionario {name server : ip}
-nss = [] # lista de name servers
-hay_respuesta = False
+ns_to_ar = {} # diccionario {name server : ip} (auxiliar)
 
-while not hay_respuesta: # voy a iterar hasta tener an > 0
+dom_ns_ip = {} # diccionario {dominio: {name server : ip}}
 
-	for ip in ips: # miro cada ip que tengo para esa iteracion hasta que una me responda
+for ip in ips:
 	
-		answer = sr1( ip / udp / dns , verbose=0, timeout=10)
-		
-		if answer == None: continue
+	print "\n\n",ip.dst,"\n"
 
-		if answer.haslayer(DNS) and answer[DNS].qd.qtype == 1:
+	answer = sr1( ip / udp / dns , verbose=0, timeout=10)
+	
+	if answer == None: 
+		print "No responde"
+		continue
 
-			print "AUTHORITY" # armo el dic ns_to_ar
-			for i in range( answer[DNS].arcount):
-				ns = answer[DNS].ar[i].rrname
-				ar = answer[DNS].ar[i].rdata
-				if answer[DNS].ar[i].type == 1:
-					ns_to_ar[ns] = IP(dst=ar)
-				elif ns not in ns_to_ar:
-					ns_to_ar[ns] = IPv6(dst=ar)
-				print ns, ar
+	if answer.haslayer(DNS) and answer[DNS].qd.qtype == 1:
 
-			print "NAME SERVERS" # me guardo los ns
-			for i in range( answer[DNS].nscount):
-				nss.append(answer[DNS].ns[i].rdata)
-				print answer[DNS].ns[i].rrname, answer[DNS].ns[i].rdata
-			
-			print "ANSWER" 
-			for i in range( answer[DNS].ancount):
-				hay_respuesta = True
-				print answer[DNS].an[i].rrname, answer[DNS].an[i].rdata
+		print "AUTHORITY" # armo el dic ns_to_ar
+		for i in range( answer[DNS].arcount):
+			ar_name = answer[DNS].ar[i].rrname
+			ar_data = answer[DNS].ar[i].rdata
+			if not ar_name in ns_to_ar: # lo agrego si es nuevo
+				ns_to_ar[ar_name] = ar_data
+			print ar_name, ar_data
 
-		break
+		print "NAME SERVERS" # armo el dic dom_ns_ip
+		for i in range( answer[DNS].nscount):
+			ns_name = answer[DNS].ns[i].rrname
+			ns_data = answer[DNS].ns[i].rdata
+			if not ns_name in dom_ns_ip:
+				dom_ns_ip[ns_name] = {}
+			if (ns_data in ns_to_ar) and (ns_data not in dom_ns_ip[ns_name]): # lo agrego si es nuevo
+				dom_ns_ip[ns_name][ns_data] = ns_to_ar[ns_data]
+				ips.append(IP(dst=ns_to_ar[ns_data])) # me guardo esa ip nueva para iterar
+			print ns_name, ns_data
 
-	ips = [] # actualizo la lista de ips con las de esta iteracion
-	for ns in nss:
-		if ns in ns_to_ar: ips.append(ns_to_ar[ns])
-	ns_to_ar = {}
-	nss = []
+		print "ANSWER" 
+		for i in range( answer[DNS].ancount):
+			hay_respuesta = True
+			print answer[DNS].an[i].rrname, answer[DNS].an[i].rdata
 
-	# TODO: VER EL COSO DE MX
-	## hasta ahora muestra todas las respuestas
-	## hay que llegar a un registro MX
+
+print "\n\nTODO LO QUE RECORRI"
+for dom in dom_ns_ip:
+	print dom
+	for ns in dom_ns_ip[dom]:
+		print "\t",ns,dom_ns_ip[dom][ns]
+
+
+# TODO: VER EL COSO DE MX
+## hasta ahora muestra todas las respuestas
+## hay que llegar a un registro MX
