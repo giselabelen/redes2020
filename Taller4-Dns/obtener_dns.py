@@ -1,10 +1,9 @@
 from scapy.all import *
 
-dns = DNS(rd=1,qd=DNSQR(qname="www.dc.uba.ar"))
+dns = DNS(rd=1,qd=DNSQR(qname="dc.uba.ar",qtype="MX")) # ahora es una query MX
 udp = UDP(sport=RandShort(), dport=53)
 ips = [IP(dst="199.9.14.201")] # ahora es una lista de ips
 ns_to_ar = {} # diccionario {name server : ip} (auxiliar)
-
 dom_ns_ip = {} # diccionario {dominio: {name server : ip}}
 
 for ip in ips:
@@ -17,7 +16,7 @@ for ip in ips:
 		print "No responde"
 		continue
 
-	if answer.haslayer(DNS) and answer[DNS].qd.qtype == 1:
+	if answer.haslayer(DNS) and answer[DNS].qd.qtype == 15:
 
 		print "AUTHORITY" # armo el dic ns_to_ar
 		for i in range( answer[DNS].arcount):
@@ -40,17 +39,14 @@ for ip in ips:
 
 		print "ANSWER" 
 		for i in range( answer[DNS].ancount):
-			hay_respuesta = True
-			print answer[DNS].an[i].rrname, answer[DNS].an[i].rdata
+			print answer[DNS].an[i].rrname, answer[DNS].an[i].exchange
 
 
-print "\n\nTODO LO QUE RECORRI"
+print "\n\nNIVELES VISTOS"
 for dom in dom_ns_ip:
 	print dom
 	for ns in dom_ns_ip[dom]:
 		print "\t",ns,dom_ns_ip[dom][ns]
 
 
-# TODO: VER EL COSO DE MX
-## hasta ahora muestra todas las respuestas
-## hay que llegar a un registro MX
+# TODO: creo que deberiamos preguntar a todos los root servers y handlear en caso de recibir SOA
